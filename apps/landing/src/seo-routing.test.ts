@@ -73,6 +73,9 @@ describe('landing SEO routing', () => {
       landingRedirectUrl(new URL('https://chmonitor.dev/clickhouse-monitoring'))
     ).toBeNull()
     expect(
+      landingRedirectUrl(new URL('https://chmonitor.dev/clickhouse-dashboard'))
+    ).toBeNull()
+    expect(
       landingRedirectUrl(new URL('https://chmonitor.dev/watch/v0.3'))
     ).toBe('https://chmonitor.dev/watch/v0-3')
   })

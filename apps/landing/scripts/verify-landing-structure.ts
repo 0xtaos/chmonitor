@@ -375,5 +375,51 @@ try {
   failed = true
 }
 
+const jsonLdBlocks =
+  html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g) ?? []
+if (jsonLdBlocks.length < 2) {
+  console.error(
+    `MISSING crawlable JSON-LD on homepage (expected >=2 scripts, got ${jsonLdBlocks.length})`
+  )
+  failed = true
+} else {
+  console.log(`OK: ${jsonLdBlocks.length} application/ld+json scripts on /`)
+}
+const jsonLdJoined = jsonLdBlocks.join('\n')
+for (const type of [
+  'Organization',
+  'SoftwareApplication',
+  'Product',
+  'FAQPage',
+] as const) {
+  if (!jsonLdJoined.includes(type)) {
+    console.error(`MISSING JSON-LD type on homepage: ${type}`)
+    failed = true
+  } else {
+    console.log(`OK: homepage JSON-LD includes ${type}`)
+  }
+}
+
+const imgTags = html.match(/<img\b[^>]*>/g) ?? []
+const imgsWithoutAlt = imgTags.filter((tag) => !/\balt=/.test(tag))
+if (imgsWithoutAlt.length > 0) {
+  console.error(
+    `MISSING alt on ${imgsWithoutAlt.length} homepage <img>: ${imgsWithoutAlt[0]}`
+  )
+  failed = true
+} else {
+  console.log(`OK: ${imgTags.length} homepage <img> tags have alt`)
+}
+const themedImgs = imgTags.filter((tag) => /\bdata-src-light/.test(tag))
+if (themedImgs.some((tag) => !/\balt=/.test(tag))) {
+  console.error('MISSING alt on theme-switched homepage <img data-src-light>')
+  failed = true
+} else if (themedImgs.length === 0) {
+  console.error('MISSING theme-switched homepage <img data-src-light>')
+  failed = true
+} else {
+  console.log(`OK: ${themedImgs.length} theme-switched homepage <img> have alt`)
+}
+
 if (failed) process.exit(1)
 console.log('verify-landing-structure: all checks passed')

@@ -3,7 +3,7 @@
  *
  * A `ServerAuthProvider` answers one question for an incoming `/api/v1`
  * request: is the caller an authenticated principal? Each configured auth
- * provider (`none` / `clerk` / `proxy` / `trusted`) supplies one
+ * provider (`none` / `clerk` / `proxy` / `trusted` / `local`) supplies one
  * implementation; the guard in `api-guard.ts` resolves the active one via
  * `resolveServerAuthProvider`.
  *

@@ -210,13 +210,16 @@ async function isAuthenticatedRequest(
     }
   }
 
-  // Reverse-proxy providers authenticate by re-running their own header/JWT
-  // check against this request. Without this, `authenticated`-access features
-  // (agent, writes) would 401 even for a proxy-authenticated caller, because
-  // the matrix would treat every proxy request as anonymous. Dynamic import
+  // Non-Clerk providers authenticate by re-running their own request checks.
+  // Without this, `authenticated`-access features (agent, writes) would 401
+  // even for a valid proxy/trusted-header/Basic-auth caller. Dynamic import
   // keeps the provider graph (and Clerk's SDK via the index) out of this
   // module's static bundle.
-  if (config.authProvider === 'proxy' || config.authProvider === 'trusted') {
+  if (
+    config.authProvider === 'proxy' ||
+    config.authProvider === 'trusted' ||
+    config.authProvider === 'local'
+  ) {
     const { resolveServerAuthProvider } = await import('@/lib/auth/providers')
     const result = await resolveServerAuthProvider(
       config.authProvider

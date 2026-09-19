@@ -36,6 +36,11 @@ describe('parseAuthProvider', () => {
     expect(parseAuthProvider(' Trusted ')).toBe('trusted')
   })
 
+  test('accepts the local provider', () => {
+    expect(parseAuthProvider('local')).toBe('local')
+    expect(parseAuthProvider(' LOCAL ')).toBe('local')
+  })
+
   test('rejects unknown providers', () => {
     expect(() => parseAuthProvider('basic')).toThrow(AuthProviderConfigError)
   })

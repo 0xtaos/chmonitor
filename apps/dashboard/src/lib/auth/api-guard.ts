@@ -230,7 +230,14 @@ export async function getApiKeyAuthFailure(
     return null
   }
 
-  return jsonError('Authentication required', 401)
+  const response = jsonError('Authentication required', 401)
+  if (getAuthProvider() === 'local') {
+    response.headers.set(
+      'WWW-Authenticate',
+      'Basic realm="chmonitor", charset="UTF-8"'
+    )
+  }
+  return response
 }
 
 /**
@@ -271,7 +278,14 @@ export async function enforceAuth(request: Request): Promise<Response | null> {
     return null
   }
 
-  return jsonError('Authentication required', 401)
+  const response = jsonError('Authentication required', 401)
+  if (getAuthProvider() === 'local') {
+    response.headers.set(
+      'WWW-Authenticate',
+      'Basic realm="chmonitor", charset="UTF-8"'
+    )
+  }
+  return response
 }
 
 /**

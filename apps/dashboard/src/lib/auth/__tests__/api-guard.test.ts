@@ -170,6 +170,44 @@ describe('x-api-key parity on /api/v1/*', () => {
   })
 })
 
+describe('local auth challenge', () => {
+  const saved: Record<string, string | undefined> = {}
+
+  beforeEach(() => {
+    for (const k of ENV_KEYS) {
+      saved[k] = process.env[k]
+      delete process.env[k]
+    }
+  })
+
+  afterEach(() => {
+    for (const k of ENV_KEYS) {
+      if (saved[k] === undefined) delete process.env[k]
+      else process.env[k] = saved[k]
+    }
+  })
+
+  it('challenges unauthenticated API and non-API requests with HTTP Basic', async () => {
+    process.env.CHM_AUTH_PROVIDER = 'local'
+
+    const apiFailure = await getApiKeyAuthFailure(
+      new Request('https://dash.example.com/api/v1/hosts')
+    )
+    const enforcedFailure = await enforceAuth(
+      new Request('https://dash.example.com/api/health')
+    )
+
+    expect(apiFailure?.status).toBe(401)
+    expect(apiFailure?.headers.get('www-authenticate')).toBe(
+      'Basic realm="chmonitor", charset="UTF-8"'
+    )
+    expect(enforcedFailure?.status).toBe(401)
+    expect(enforcedFailure?.headers.get('www-authenticate')).toBe(
+      'Basic realm="chmonitor", charset="UTF-8"'
+    )
+  })
+})
+
 describe('GET /api/v1/releases is a public changelog document', () => {
   const saved: Record<string, string | undefined> = {}
 

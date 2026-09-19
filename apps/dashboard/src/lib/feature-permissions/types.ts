@@ -93,7 +93,7 @@ export interface MetadataDbPublicConfig {
 }
 
 export interface PublicFeaturePermissionConfig {
-  authProvider: 'none' | 'clerk' | 'proxy' | 'trusted'
+  authProvider: 'none' | 'clerk' | 'proxy' | 'trusted' | 'local'
   principal: Principal
   features: FeatureOverrides
   resolved?: ResolvedFeatureStates
